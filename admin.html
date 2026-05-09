@@ -234,7 +234,7 @@ function closeToast() {
 // ===== POLL FOR NEW ORDERS =====
 async function checkNewOrders() {
   try {
-    const res = await fetch('http://https://mabuyu-street-production.up.railway.app/api/latest-order', {
+    const res = await fetch('https://mabuyu-street-production.up.railway.app/api/latest-order', {
       headers: { 'x-admin-token': adminToken }
     });
     const data = await res.json();
@@ -305,7 +305,7 @@ async function loadAll() {
 async function loadOrders() {
   const container = document.getElementById('ordersList');
   try {
-    const res = await fetch('http://localhost:3000/api/orders', {
+    const res = await fetch('https://mabuyu-street-production.up.railway.app/api/orders', {
       headers: { 'x-admin-token': adminToken }
     });
     const orders = await res.json();
@@ -343,7 +343,7 @@ async function loadOrders() {
 async function loadReviews() {
   const container = document.getElementById('reviewsList');
   try {
-    const res = await fetch('http://localhost:3000/api/reviews', {
+    const res = await fetch('https://mabuyu-street-production.up.railway.app/api/reviews', {
       headers: { 'x-admin-token': adminToken }
     });
     const reviews = await res.json();
