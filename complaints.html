@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reviews & Complaints — Mabuyu Street</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <div class="logo">🌿 Mabuyu Street</div>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="contact.html">Contact & Location</a></li>
+    <li><a href="complaints.html" class="active">Reviews</a></li>
+  </ul>
+</nav>
+
+<div class="form-section">
+  <div class="form-card">
+    <h2>💬 Share Your Experience</h2>
+
+    <div class="form-group">
+      <label>Your Name (optional)</label>
+      <input type="text" id="name" placeholder="e.g. Amina">
+    </div>
+
+    <div class="form-group">
+      <label>Type of Feedback</label>
+      <select id="type">
+        <option value="">-- Select --</option>
+        <option value="review">⭐ Review / Praise</option>
+        <option value="suggestion">💡 Suggestion</option>
+        <option value="complaint">⚠️ Complaint</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Rate Us</label>
+      <div class="star-rating" id="stars">
+        <span class="star" data-val="1">★</span>
+        <span class="star" data-val="2">★</span>
+        <span class="star" data-val="3">★</span>
+        <span class="star" data-val="4">★</span>
+        <span class="star" data-val="5">★</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Your Message</label>
+      <textarea id="message" rows="5" placeholder="Tell us what you think..."></textarea>
+    </div>
+
+    <button class="submit-btn" onclick="submitForm()">Send Feedback 🚀</button>
+    <div class="success-msg" id="success">
+      ✅ Thank you! Your feedback has been received. We appreciate you!
+    </div>
+  </div>
+</div>
+
+<footer>
+  &copy; 2026 Mabuyu Street &mdash; Along Gatundu Road, Opposite Nderich Wines
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

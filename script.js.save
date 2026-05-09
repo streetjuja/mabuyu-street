@@ -1,0 +1,124 @@
+// ===== CART =====
+let cart = {};
+
+function changeQty(name, price, delta) {
+  const id = 'qty-' + name;
+  const el = document.getElementById(id);
+  if (!el) return;
+  let current = parseInt(el.textContent) || 0;
+  current = Math.max(0, current + delta);
+  el.textContent = current;
+}
+
+function addToCart(name, price) {
+  const id = 'qty-' + name;
+  const el = document.getElementById(id);
+  const qty = el ? parseInt(el.textContent) || 0 : 0;
+
+  if (qty === 0) {
+    alert('Please select a quantity first using the + button');
+    return;
+  }
+
+  if (cart[name]) {
+    cart[name].qty += qty;
+  } else {
+    cart[name] = { price, qty };
+  }
+
+  if (el) el.textContent = '0';
+  updateCartUI();
+
+  const btn = event.target;
+  btn.textContent = '✓ Added!';
+  setTimeout(() => btn.textContent = 'Add to Cart', 1000);
+}
+
+function updateCartUI() {
+  const cartItems = document.getElementById('cartItems');
+  const cartFooter = document.getElementById('cartFooter');
+  const cartCount = document.getElementById('cart-count');
+  const cartTotal = document.getElementById('cartTotal');
+
+  const keys = Object.keys(cart);
+  let total = 0;
+  let count = 0;
+
+  if (keys.length === 0) {
+    cartItems.innerHTML = '<p class="empty-cart">Your cart is empty</p>';
+    cartFooter.style.display = 'none';
+    cartCount.textContent = '0';
+    return;
+  }
+
+  cartItems.innerHTML = '';
+
+  keys.forEach(name => {
+    const item = cart[name];
+    const itemTotal = item.price * item.qty;
+    total += itemTotal;
+    count += item.qty;
+
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `
+      <div class="cart-item-info">
+        <div class="cart-item-name">${name}</div>
+        <div class="cart-item-meta">
+          <span class="meta-badge">Ksh ${item.price} each</span>
+          <span class="meta-badge qty-badge">x${item.qty}</span>
+          <span class="meta-badge total-badge">= Ksh ${itemTotal}</span>
+        </div>
+      </div>
+      <div class="cart-item-qty">
+        <button onclick="updateCartItem('${name}', -1)">−</button>
+        <span>${item.qty}</span>
+        <button onclick="updateCartItem('${name}', 1)">+</button>
+      </div>
+    `;
+    cartItems.appendChild(div);
+  });
+
+  // Divider + total row
+  const totalRow = document.createElement('div');
+  totalRow.className = 'cart-total-row';
+  totalRow.innerHTML = `
+    <span>${count} item${count !== 1 ? 's' : ''}</span>
+    <span class="grand-total">Grand Total: Ksh ${total}</span>
+  `;
+  cartItems.appendChild(totalRow);
+
+  cartTotal.textContent = 'Ksh ' + total;
+  cartCount.textContent = count;
+  cartFooter.style.display = 'flex';
+}
+
+function updateCartItem(name, delta) {
+  if (!cart[name]) return;
+  cart[name].qty += delta;
+  if (cart[name].qty <= 0) delete cart[name];
+  updateCartUI();
+}
+
+function toggleCart() {
+  document.getElementById('cartSidebar').classList.toggle('open');
+  document.getElementById('cartOverlay').classList.toggle('open');
+  const dtEl = document.getElementById('datetimeDisplay');
+  if (dtEl) dtEl.textContent = '🕐 Order time: ' + getDateTime();
+}
+function getDateTime() {
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const day = days[now.getDay()];
+  const date = now.getDate();
+  const month = months[now.getMonth()];
+  const year = now.getFullYear();
+  let hours = now.getHours();
+  const mins = String(now.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12;
+  return `${day}, ${date} ${month} ${year} at ${hours}:${mins} ${ampm}`;
+}
+
+

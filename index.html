@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mabuyu Street</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <div class="logo">🌿 Mabuyu Street</div>
+  <ul>
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="contact.html">Contact & Location</a></li>
+    <li><a href="complaints.html">Reviews</a></li>
+  </ul>
+  <div class="cart-icon" onclick="toggleCart()">
+    🛒 <span id="cart-count">0</span>
+  </div>
+</nav>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h2>🛒 Your Order</h2>
+    <button onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <p class="empty-cart">Your cart is empty</p>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total">Total: <span id="cartTotal">Ksh 0</span></div>
+    <input type="text" id="customerName" placeholder="👤 Your name (optional)">
+    <input type="tel" id="customerPhone" placeholder="📞 Your phone number *required">
+    <input type="text" id="customerLocation" placeholder="📍 Your location / delivery area">
+    <div class="datetime-display" id="datetimeDisplay"></div>
+    <button class="clear-btn" onclick="clearCart()">🗑️ Cancel & Clear Cart</button>
+    <button class="order-btn" onclick="sendOrder()">📲 Send Order via WhatsApp + Email</button>
+    <div class="order-success" id="orderSuccess">✅ Order sent! We will confirm shortly.</div>
+  </div>
+</div>
+
+<section class="hero">
+  <h1>Mabuyu Street</h1>
+  <p>Welcome to Mabuyu Street where taste meets vibes 🔥</p>
+  <span class="tagline">Authentic Kenyan Street Snacks</span>
+</section>
+
+<h2 class="section-title">Our Menu</h2>
+
+<div class="products">
+
+  <div class="card">
+    <img src="images/mabuyu.jpg" alt="Mabuyu">
+    <span class="emoji">🟤</span>
+    <h3>Mabuyu</h3>
+    <div class="price">Ksh 30 <span>/portion</span></div>
+    <div class="qty-control">
+      <button onclick="changeQty('Mabuyu', 30, -1)">−</button>
+      <span id="qty-Mabuyu">0</span>
+      <button onclick="changeQty('Mabuyu', 30, 1)">+</button>
+    </div>
+    <button class="add-btn" onclick="addToCart('Mabuyu', 30)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="images/achari.jpg" alt="Achari">
+    <span class="emoji">🌶️</span>
+    <h3>Achari</h3>
+    <div class="price">Ksh 70 <span>/portion</span></div>
+    <div class="qty-control">
+      <button onclick="changeQty('Achari', 70, -1)">−</button>
+      <span id="qty-Achari">0</span>
+      <button onclick="changeQty('Achari', 70, 1)">+</button>
+    </div>
+    <button class="add-btn" onclick="addToCart('Achari', 70)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="images/labania.jpg" alt="Labania">
+    <span class="emoji">🥜</span>
+    <h3>Labania</h3>
+    <div class="price">Ksh 130 <span>/pack</span></div>
+    <div class="qty-control">
+      <button onclick="changeQty('Labania', 130, -1)">−</button>
+      <span id="qty-Labania">0</span>
+      <button onclick="changeQty('Labania', 130, 1)">+</button>
+    </div>
+    <button class="add-btn" onclick="addToCart('Labania', 130)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="images/njugu.jpg" alt="Njugu ya Asali">
+    <span class="emoji">🍯</span>
+    <h3>Njugu ya Asali</h3>
+    <div class="price">Ksh 130 <span>/pack</span></div>
+    <div class="qty-control">
+      <button onclick="changeQty('Njugu ya Asali', 130, -1)">−</button>
+      <span id="qty-Njugu-ya-Asali">0</span>
+      <button onclick="changeQty('Njugu ya Asali', 130, 1)">+</button>
+    </div>
+    <button class="add-btn" onclick="addToCart('Njugu ya Asali', 130)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="images/simsim.jpg" alt="Simsim">
+    <span class="emoji">⚪</span>
+    <h3>Simsim</h3>
+    <div class="price">Ksh 130 <span>/pack</span></div>
+    <div class="qty-control">
+      <button onclick="changeQty('Simsim', 130, -1)">−</button>
+      <span id="qty-Simsim">0</span>
+      <button onclick="changeQty('Simsim', 130, 1)">+</button>
+    </div>
+    <button class="add-btn" onclick="addToCart('Simsim', 130)">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <img src="images/kashata.jpg" alt="Kashata">
+    <span class="emoji">🍬</span>
+    <h3>Kashata</h3>
+    <div class="price">Ksh 30 <span>/piece</span></div>
+    <div class="qty-control">
+      <button onclick="changeQty('Kashata', 30, -1)">−</button>
+      <span id="qty-Kashata">0</span>
+      <button onclick="changeQty('Kashata', 30, 1)">+</button>
+    </div>
+    <button class="add-btn" onclick="addToCart('Kashata', 30)">Add to Cart</button>
+  </div>
+
+</div>
+
+<footer>
+  &copy; 2026 Mabuyu Street &mdash; Along Gatundu Road, Opposite Nderich Wines
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

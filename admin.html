@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#d4a017">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mabuyu Admin">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <title>Admin — Mabuyu Street</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: linear-gradient(135deg, #0a0a0a 0%, #111111 50%, #1a0a0a 100%) !important; }
+    nav { background: rgba(0,0,0,0.85) !important; }
+    footer { background: rgba(0,0,0,0.8) !important; }
+    .login-screen { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+    .login-card { background: linear-gradient(145deg, rgba(10,10,10,0.95), rgba(20,5,5,0.9)); border: 1px solid rgba(212,160,23,0.4); border-radius: 20px; padding: 50px 40px; width: 100%; max-width: 400px; text-align: center; }
+    .login-card h2 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.8rem; margin-bottom: 8px; }
+    .login-card p { opacity: 0.6; margin-bottom: 30px; font-size: 0.95rem; }
+    .login-card input { width: 100%; padding: 14px 18px; background: rgba(0,0,0,0.5); border: 1px solid rgba(212,160,23,0.3); border-radius: 10px; color: var(--cream); font-size: 1rem; margin-bottom: 16px; text-align: center; letter-spacing: 4px; }
+    .login-card input:focus { outline: none; border-color: var(--gold); }
+    .login-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--gold), #b8860b); color: #1a1a1a; border: none; border-radius: 50px; font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: transform 0.2s; }
+    .login-btn:hover { transform: scale(1.03); }
+    .login-error { color: #ff6b6b; margin-top: 14px; font-size: 0.95rem; display: none; }
+    .dashboard { display: none; }
+    .admin-container { max-width: 1000px; margin: 40px auto; padding: 0 24px; }
+    .admin-title { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 2rem; text-align: center; margin-bottom: 30px; }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+    .top-bar-right { display: flex; gap: 10px; align-items: center; }
+    .logout-btn { padding: 8px 20px; background: transparent; border: 1px solid #ff6b6b; color: #ff6b6b; border-radius: 50px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+    .logout-btn:hover { background: #ff6b6b; color: white; }
+    .summary-bar { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; }
+    .summary-card { background: rgba(0,0,0,0.6); border: 1px solid rgba(212,160,23,0.3); border-radius: 14px; padding: 20px 32px; text-align: center; min-width: 160px; }
+    .summary-card .s-number { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold); }
+    .summary-card .s-label { font-size: 0.85rem; opacity: 0.7; margin-top: 4px; }
+    .tab-btns { display: flex; gap: 12px; justify-content: center; margin-bottom: 30px; }
+    .tab-btn { padding: 12px 32px; border: 2px solid var(--gold); background: rgba(0,0,0,0.6); color: var(--gold); border-radius: 50px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+    .tab-btn.active, .tab-btn:hover { background: var(--gold); color: #1a1a1a; }
+    .tab { display: none; }
+    .tab.active { display: block; }
+    .order-card { background: linear-gradient(145deg, rgba(10,10,10,0.95), rgba(20,5,5,0.9)); border: 1px solid rgba(212,160,23,0.25); border-radius: 16px; padding: 24px; margin-bottom: 20px; transition: border-color 0.2s; }
+    .order-card:hover { border-color: var(--gold); }
+    .order-card h3 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.2rem; margin-bottom: 12px; }
+    .order-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+    .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
+    .new-badge { background: rgba(76,175,80,0.2); border-color: #4caf50; color: #4caf50; }
+    .order-item-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.95rem; }
+    .order-total { color: var(--gold); font-weight: 700; font-size: 1.1rem; margin-top: 10px; text-align: right; }
+    .empty-msg { text-align: center; opacity: 0.5; margin-top: 60px; font-size: 1.1rem; }
+    .refresh-btn { display: block; margin: 0 auto 30px; padding: 10px 28px; background: transparent; border: 1px solid var(--gold); color: var(--gold); border-radius: 50px; cursor: pointer; font-size: 0.95rem; transition: all 0.2s; }
+    .refresh-btn:hover { background: var(--gold); color: #1a1a1a; }
+    .stars { color: var(--gold); font-size: 1.2rem; margin-top: 6px; }
+
+    /* ===== NOTIFICATION TOAST ===== */
+    .toast {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: linear-gradient(135deg, #1a3a1a, #0d1f0d);
+      border: 2px solid #4caf50;
+      border-radius: 16px;
+      padding: 20px 24px;
+      z-index: 9999;
+      display: none;
+      max-width: 320px;
+      box-shadow: 0 8px 32px rgba(76,175,80,0.3);
+      animation: slideIn 0.4s ease;
+    }
+    .toast.show { display: block; }
+    .toast h4 { color: #4caf50; font-family: 'Playfair Display', serif; margin-bottom: 6px; font-size: 1.1rem; }
+    .toast p { color: var(--cream); font-size: 0.9rem; opacity: 0.9; }
+    .toast-close { position: absolute; top: 10px; right: 14px; background: none; border: none; color: var(--cream); font-size: 1.1rem; cursor: pointer; opacity: 0.6; }
+    .toast-close:hover { opacity: 1; }
+    @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* ===== AUTO REFRESH INDICATOR ===== */
+    .auto-refresh-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      opacity: 0.7;
+      color: var(--cream);
+    }
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      background: #4caf50;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(76,175,80,0.6); }
+      70% { box-shadow: 0 0 0 8px rgba(76,175,80,0); }
+      100% { box-shadow: 0 0 0 0 rgba(76,175,80,0); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🌿 Mabuyu Street</div>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="complaints.html">Reviews</a></li>
+  </ul>
+</nav>
+
+<!-- NOTIFICATION TOAST -->
+<div class="toast" id="toast">
+  <button class="toast-close" onclick="closeToast()">✕</button>
+  <h4>🛒 New Order!</h4>
+  <p id="toastMessage">A new order has been placed!</p>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <h2>🔐 Admin Login</h2>
+    <p>Enter your admin password to continue</p>
+    <input type="password" id="passwordInput" placeholder="••••••••" onkeypress="if(event.key==='Enter') login()">
+    <button class="login-btn" onclick="login()">Login →</button>
+    <div class="login-error" id="loginError">❌ Wrong password. Try again.</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <div class="admin-container">
+    <div class="top-bar">
+      <h2 class="admin-title" style="margin:0">🔧 Admin Dashboard</h2>
+      <div class="top-bar-right">
+        <div class="auto-refresh-indicator">
+          <div class="pulse-dot"></div>
+          <span>Live — refreshes every 30s</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+      </div>
+    </div>
+
+    <div class="summary-bar">
+      <div class="summary-card">
+        <div class="s-number" id="totalOrders">—</div>
+        <div class="s-label">Total Orders</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-number" id="totalRevenue">—</div>
+        <div class="s-label">Total Revenue</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-number" id="totalReviews">—</div>
+        <div class="s-label">Reviews</div>
+      </div>
+    </div>
+
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="showTab('orders', this)">📦 Orders</button>
+      <button class="tab-btn" onclick="showTab('reviews', this)">💬 Reviews</button>
+    </div>
+
+    <button class="refresh-btn" onclick="loadAll()">🔄 Refresh Now</button>
+
+    <div class="tab active" id="tab-orders">
+      <div id="ordersList"><p class="empty-msg">Loading orders...</p></div>
+    </div>
+    <div class="tab" id="tab-reviews">
+      <div id="reviewsList"><p class="empty-msg">Loading reviews...</p></div>
+    </div>
+  </div>
+</div>
+
+<footer>&copy; 2026 Mabuyu Street Admin Panel</footer>
+
+<script>
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then(() => console.log('✅ Service Worker registered'))
+    .catch(err => console.log('SW error:', err));
+}
+let adminToken = null;
+let knownLastOrderId = 0;
+let autoRefreshInterval = null;
+let notificationSound = null;
+
+// ===== NOTIFICATION SOUND =====
+function createSound() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = ctx.createOscillator();
+  const gain = ctx.createGain();
+  oscillator.connect(gain);
+  gain.connect(ctx.destination);
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(520, ctx.currentTime);
+  oscillator.frequency.setValueAtTime(660, ctx.currentTime + 0.1);
+  oscillator.frequency.setValueAtTime(800, ctx.currentTime + 0.2);
+  gain.gain.setValueAtTime(0.4, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+  oscillator.start(ctx.currentTime);
+  oscillator.stop(ctx.currentTime + 0.6);
+}
+
+// ===== BROWSER NOTIFICATION =====
+function requestNotificationPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+function showBrowserNotification(title, body) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(title, {
+      body: body,
+      icon: 'images/mabuyu.jpg'
+    });
+  }
+}
+
+function showToast(message) {
+  document.getElementById('toastMessage').textContent = message;
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 8000);
+}
+
+function closeToast() {
+  document.getElementById('toast').classList.remove('show');
+}
+
+// ===== POLL FOR NEW ORDERS =====
+async function checkNewOrders() {
+  try {
+    const res = await fetch('http://localhost:3000/api/latest-order', {
+      headers: { 'x-admin-token': adminToken }
+    });
+    const data = await res.json();
+    if (data.lastOrderId > knownLastOrderId && knownLastOrderId !== 0) {
+      // New order detected!
+      createSound();
+      showToast('A new order just came in! Check the Orders tab.');
+      showBrowserNotification('🛒 New Order — Mabuyu Street', 'A customer just placed a new order!');
+      loadAll();
+    }
+    knownLastOrderId = data.lastOrderId;
+  } catch(e) {
+    console.log('Poll error:', e);
+  }
+}
+
+// ===== LOGIN =====
+async function login() {
+  const password = document.getElementById('passwordInput').value;
+  const errorEl = document.getElementById('loginError');
+  try {
+    const res = await fetch('http://localhost:3000/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    const data = await res.json();
+    if (data.success) {
+      adminToken = data.token;
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      requestNotificationPermission();
+      loadAll();
+      // Start auto refresh every 30 seconds
+      autoRefreshInterval = setInterval(() => {
+        checkNewOrders();
+      }, 30000);
+    } else {
+      errorEl.style.display = 'block';
+    }
+  } catch(e) {
+    errorEl.textContent = '⚠️ Cannot connect to server. Is it running?';
+    errorEl.style.display = 'block';
+  }
+}
+
+function logout() {
+  adminToken = null;
+  clearInterval(autoRefreshInterval);
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('passwordInput').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+
+function showTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+async function loadAll() {
+  await loadOrders();
+  await loadReviews();
+}
+
+async function loadOrders() {
+  const container = document.getElementById('ordersList');
+  try {
+    const res = await fetch('http://localhost:3000/api/orders', {
+      headers: { 'x-admin-token': adminToken }
+    });
+    const orders = await res.json();
+    document.getElementById('totalOrders').textContent = orders.length;
+    const revenue = orders.reduce((sum, o) => sum + o.total, 0);
+    document.getElementById('totalRevenue').textContent = 'Ksh ' + revenue;
+    if (orders.length === 0) {
+      container.innerHTML = '<p class="empty-msg">No orders yet</p>';
+      return;
+    }
+    container.innerHTML = orders.map((o, i) => `
+      <div class="order-card">
+        <h3>📦 Order #${o.id} — ${o.datetime} ${i === 0 ? '<span class="badge new-badge">🆕 Latest</span>' : ''}</h3>
+        <div class="order-meta">
+          <span class="badge">👤 ${o.name}</span>
+          <span class="badge">📞 ${o.phone}</span>
+          <span class="badge">📍 ${o.location || 'No location'}</span>
+        </div>
+        <div class="order-items">
+          ${o.items.map(i => `
+            <div class="order-item-row">
+              <span>${i.name} × ${i.qty}</span>
+              <span>Ksh ${i.itemTotal}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="order-total">💰 Total: Ksh ${o.total}</div>
+      </div>
+    `).join('');
+  } catch(e) {
+    container.innerHTML = '<p class="empty-msg">⚠️ Could not load orders.</p>';
+  }
+}
+
+async function loadReviews() {
+  const container = document.getElementById('reviewsList');
+  try {
+    const res = await fetch('http://localhost:3000/api/reviews', {
+      headers: { 'x-admin-token': adminToken }
+    });
+    const reviews = await res.json();
+    document.getElementById('totalReviews').textContent = reviews.length;
+    if (reviews.length === 0) {
+      container.innerHTML = '<p class="empty-msg">No reviews yet</p>';
+      return;
+    }
+    container.innerHTML = reviews.map(r => `
+      <div class="order-card">
+        <h3>${r.type === 'complaint' ? '⚠️' : r.type === 'suggestion' ? '💡' : '⭐'} ${r.type} — #${r.id}</h3>
+        <div class="order-meta">
+          <span class="badge">👤 ${r.name}</span>
+          <span class="badge">📅 ${r.created_at}</span>
+        </div>
+        <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+        <p style="margin-top:10px; opacity:0.9; line-height:1.6">${r.message}</p>
+      </div>
+    `).join('');
+  } catch(e) {
+    container.innerHTML = '<p class="empty-msg">⚠️ Could not load reviews.</p>';
+  }
+}
+</script>
+</body>
+</html>
