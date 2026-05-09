@@ -232,7 +232,7 @@ async function submitForm() {
   }
 
   try {
-    await fetch('http://localhost:3000/api/reviews', {
+    await fetch('https://mabuyu-street-production.up.railway.app/api/reviews', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: name, type: type, rating: selectedRating, message: message })
