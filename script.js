@@ -162,7 +162,7 @@ async function sendOrder() {
 
   // Save to database
   try {
-    await fetch('http://localhost:3000/api/orders', {
+    await fetch('https://mabuyu-street-production.up.railway.app/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: name, phone: phone, location: location, items: itemsArray, total: total, datetime: datetime })

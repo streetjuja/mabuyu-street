@@ -233,7 +233,7 @@ function closeToast() {
 // ===== POLL FOR NEW ORDERS =====
 async function checkNewOrders() {
   try {
-    const res = await fetch('http://localhost:3000/api/latest-order', {
+    const res = await fetch('http://https://mabuyu-street-production.up.railway.app/api/latest-order', {
       headers: { 'x-admin-token': adminToken }
     });
     const data = await res.json();
