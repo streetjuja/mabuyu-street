@@ -6,7 +6,7 @@ const https = require('https');
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static('../'));
+app.use(app.use(express.static(require('path').join(__dirname, '../')));('../'));
 
 const ADMIN_PASSWORD = 'mabuyu2026';
 let lastOrderId = 0;
@@ -109,6 +109,9 @@ app.get('/api/latest-order', requireAdmin, (req, res) => {
   res.json({ lastOrderId });
 });
 
+app.get('/', (req, res) => {
+  res.sendFile(require('path').join(__dirname, '../index.html'));
+});
 app.listen(3000, '0.0.0.0', () => {
   console.log('🚀 Mabuyu Street server running at http://localhost:3000');
 });
