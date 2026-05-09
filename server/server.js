@@ -1,12 +1,12 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
-const https = require('https');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(app.use(express.static(require('path').join(__dirname, '../')));('../'));
+app.use(express.static(path.join(__dirname, '../')));
 
 const ADMIN_PASSWORD = 'mabuyu2026';
 let lastOrderId = 0;
@@ -29,9 +29,9 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-const db = new sqlite3.Database('./mabuyu.db', (err) => {
+const db = new sqlite3.Database(path.join(__dirname, 'mabuyu.db'), (err) => {
   if (err) console.error('DB Error:', err);
-  else console.log('✅ Database connected: mabuyu.db');
+  else console.log('✅ Database connected');
 });
 
 db.serialize(() => {
@@ -110,8 +110,10 @@ app.get('/api/latest-order', requireAdmin, (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(require('path').join(__dirname, '../index.html'));
+  res.sendFile(path.join(__dirname, '../index.html'));
 });
-app.listen(3000, '0.0.0.0', () => {
-  console.log('🚀 Mabuyu Street server running at http://localhost:3000');
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log('🚀 Mabuyu Street server running on port ' + PORT);
 });
