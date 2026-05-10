@@ -188,29 +188,14 @@ async function paystackPay(name, phone, total) {
     email: email,
     amount: total * 100,
     currency: 'KES',
-    channels: selectedPayment === 'mpesa' ? ['mobile_money'] : ['card'],
+   channels: selectedPayment === 'mpesa' ? ['mobile_money', 'card'] : ['card'],
     metadata: { name: name, phone: phone },
-    callback: async function(response) {
-      // Verify payment
-      try {
-        const res = await fetch('https://mabuyu-street-production.up.railway.app/api/verify-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ reference: response.reference })
-        });
-        const data = await res.json();
-        if (data.success) {
-          const name2 = document.getElementById('customerName').value.trim() || 'Customer';
-          const phone2 = document.getElementById('customerPhone').value.trim();
-          const location2 = document.getElementById('customerLocation').value.trim();
-          const datetime2 = getDateTime();
-          await placeOrder(name2, phone2, location2, datetime2, selectedPayment === 'mpesa' ? 'M-Pesa' : 'Card', response.reference);
-        } else {
-          alert('Payment could not be verified. Please try again.');
-        }
-      } catch(e) {
-        alert('Payment verification failed. Please contact us.');
-      }
+callback: async function(response) {
+      const name2 = document.getElementById('customerName').value.trim() || 'Customer';
+      const phone2 = document.getElementById('customerPhone').value.trim();
+      const location2 = document.getElementById('customerLocation').value.trim();
+      const datetime2 = getDateTime();
+      await placeOrder(name2, phone2, location2, datetime2, selectedPayment === 'mpesa' ? 'M-Pesa' : 'Card', response.reference);
     },
     onClose: function() {
       alert('Payment cancelled.');
