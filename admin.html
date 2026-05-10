@@ -323,6 +323,7 @@ container.innerHTML = orders.map((o, i) => `
           <span class="badge">👤 ${o.name}</span>
           <span class="badge">📞 ${o.phone}</span>
           <span class="badge">📍 ${o.location || 'No location'}</span>
+          <span class="badge">${o.paymentMethod === 'M-Pesa' ? '📱' : o.paymentMethod === 'Card' ? '💳' : '💵'} ${o.paymentMethod || 'Cash on Delivery'}</span>
         </div>
         <div class="order-items">
           ${o.items.map(item => `
