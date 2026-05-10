@@ -141,6 +141,13 @@ app.patch('/api/orders/:id/status', requireAdmin, (req, res) => {
 });
 
 // Customer confirms received
+app.get('/api/order-status-by-id/:id', (req, res) => {
+  db.get(`SELECT id, name, status, total, datetime FROM orders WHERE id = ?`, [req.params.id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.json({ found: false });
+    res.json({ found: true, order: row });
+  });
+});
 app.patch('/api/orders/:id/confirm', (req, res) => {
   db.run(`UPDATE orders SET status = 'confirmed', delivered = 1 WHERE id = ?`, [req.params.id], function(err) {
     if (err) return res.status(500).json({ error: err.message });
