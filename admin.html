@@ -337,9 +337,9 @@ container.innerHTML = orders.map((o, i) => `
          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
             <button onclick="setStatus(${o.id}, 'processing')" style="flex:1; padding:10px; background:${o.status === 'processing' ? '#d4a017' : 'rgba(212,160,23,0.1)'}; border:1px solid #d4a017; color:${o.status === 'processing' ? '#1a1a1a' : '#d4a017'}; border-radius:50px; cursor:pointer; font-size:0.85rem; font-weight:700;">⏳ Processing</button>
             <button onclick="setStatus(${o.id}, 'enroute')" style="flex:1; padding:10px; background:${o.status === 'enroute' ? '#2196f3' : 'rgba(33,150,243,0.1)'}; border:1px solid #2196f3; color:${o.status === 'enroute' ? 'white' : '#2196f3'}; border-radius:50px; cursor:pointer; font-size:0.85rem; font-weight:700;">🚚 Enroute</button>
-            <button onclick="setStatus(${o.id}, 'delivered')" style="flex:1; padding:10px; background:${o.status === 'delivered' || o.status === 'confirmed' ? '#4caf50' : 'rgba(76,175,80,0.1)'}; border:1px solid #4caf50; color:${o.status === 'delivered' || o.status === 'confirmed' ? 'white' : '#4caf50'}; border-radius:50px; cursor:pointer; font-size:0.85rem; font-weight:700;">✅ Delivered</button>
+            <button onclick="setStatus(${o.id}, 'delivered')" style="flex:1; padding:10px;background:${o.status === 'delivered' ? '#4caf50' : o.status === 'confirmed' ? '#2e7d32' : 'rgba(76,175,80,0.1)'} border:1px solid #4caf50; color:${o.status === 'delivered' || o.status === 'confirmed' ? 'white' : '#4caf50'}; border-radius:50px; cursor:pointer; font-size:0.85rem; font-weight:700;">✅ Delivered</button>
           </div>
-          ${o.status === 'confirmed' ? '<div style="margin-top:8px; color:#4caf50; font-size:0.9rem; text-align:center;">🎉 Customer confirmed receipt</div>' : ''}
+         ${o.status === 'confirmed' ? '<div style="margin-top:8px; padding:10px; background:rgba(76,175,80,0.15); border:1px solid #4caf50; border-radius:10px; color:#4caf50; font-size:0.95rem; text-align:center;">🎉 Customer confirmed receipt!</div>' : ''}
         </div>
       </div>
     `).join('');
