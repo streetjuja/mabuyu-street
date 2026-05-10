@@ -239,8 +239,6 @@ async function submitForm() {
     console.log('DB error:', e);
   }
 
-  const waText = 'New ' + type + ' from Mabuyu Street\n\nName: ' + name + '\nRating: ' + selectedRating + ' stars\n\nMessage:\n' + message;
-  window.open('https://wa.me/254793400696?text=' + encodeURIComponent(waText), '_blank');
 
   try {
     await fetch('https://formspree.io/f/maqvdekq', {
