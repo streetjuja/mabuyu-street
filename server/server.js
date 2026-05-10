@@ -50,6 +50,8 @@ db.serialize(() => {
   )`);
   db.run(`ALTER TABLE orders ADD COLUMN delivered INTEGER DEFAULT 0`, () => {});
   db.run(`ALTER TABLE orders ADD COLUMN status TEXT DEFAULT 'processing'`, () => {});
+  db.run(`ALTER TABLE orders ADD COLUMN paymentMethod TEXT DEFAULT 'Cash on Delivery'`, () => {});
+  db.run(`ALTER TABLE orders ADD COLUMN paymentRef TEXT DEFAULT ''`, () => {});
   db.run(`CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
