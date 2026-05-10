@@ -332,10 +332,12 @@ container.innerHTML = orders.map((o, i) => `
             </div>
           `).join('')}
         </div>
-        <div class="order-total">💰 Total: Ksh ${o.total}</div>
-        <button onclick="toggleDelivered(${o.id}, ${o.delivered ? 0 : 1})" style="margin-top:14px; padding:10px 24px; background:${o.delivered ? 'transparent' : 'linear-gradient(135deg,#4caf50,#2e7d32)'}; border:${o.delivered ? '1px solid #ff6b6b' : 'none'}; color:${o.delivered ? '#ff6b6b' : 'white'}; border-radius:50px; cursor:pointer; font-size:0.95rem; font-weight:600;">
-          ${o.delivered ? '↩️ Mark as Undelivered' : '✅ Mark as Delivered'}
-        </button>
+<div class="order-total">💰 Total: Ksh ${o.total}</div>
+        <div style="margin-top:16px; text-align:center;">
+          <button onclick="toggleDelivered(${o.id}, ${o.delivered ? 0 : 1})" style="display:inline-block; padding:12px 30px; background:${o.delivered ? '#1a1a1a' : '#4caf50'}; border:2px solid ${o.delivered ? '#ff6b6b' : '#4caf50'}; color:${o.delivered ? '#ff6b6b' : 'white'}; border-radius:50px; cursor:pointer; font-size:1rem; font-weight:700; width:100%;">
+            ${o.delivered ? '↩️ Mark as Undelivered' : '✅ Mark as Delivered'}
+          </button>
+        </div>
       </div>
     `).join('');
   } catch(e) {
