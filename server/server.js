@@ -9,6 +9,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../')));
 
 const ADMIN_PASSWORD = 'mabuyu2026';
+const PAYSTACK_SECRET = 'sk_test_3acd0ca5655fec02655f31c56c4ca9277b7e2a35';
 let lastOrderId = 0;
 
 function sendNotification(message) {
@@ -153,6 +154,35 @@ app.patch('/api/orders/:id/confirm', (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ success: true });
   });
+});
+app.post('/api/verify-payment', async (req, res) => {
+  const { reference } = req.body;
+  try {
+    const https = require('https');
+    const options = {
+      hostname: 'api.paystack.co',
+      port: 443,
+      path: '/transaction/verify/' + reference,
+      method: 'GET',
+      headers: { Authorization: 'Bearer ' + PAYSTACK_SECRET }
+    };
+    const paystackRes = await new Promise((resolve, reject) => {
+      const request = https.request(options, (response) => {
+        let data = '';
+        response.on('data', chunk => data += chunk);
+        response.on('end', () => resolve(JSON.parse(data)));
+      });
+      request.on('error', reject);
+      request.end();
+    });
+    if (paystackRes.data.status === 'success') {
+      res.json({ success: true, data: paystackRes.data });
+    } else {
+      res.json({ success: false });
+    }
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 app.listen(PORT, '0.0.0.0', () => {
   console.log('🚀 Mabuyu Street server running on port ' + PORT);

@@ -1,5 +1,27 @@
 // ===== CART =====
 let cart = {};
+let selectedPayment = 'cash';
+
+function selectPayment(method) {
+  selectedPayment = method;
+  const buttons = { mpesa: 'pay-mpesa', card: 'pay-card', cash: 'pay-cash' };
+  const colors = { mpesa: '#4caf50', card: '#2196f3', cash: '#d4a017' };
+  const bgs = { mpesa: 'rgba(0,150,0,0.15)', card: 'rgba(33,150,243,0.15)', cash: 'rgba(212,160,23,0.15)' };
+  Object.keys(buttons).forEach(m => {
+    const btn = document.getElementById(buttons[m]);
+    if (!btn) return;
+    if (m === method) {
+      btn.style.background = bgs[m];
+      btn.style.borderColor = colors[m];
+      btn.style.borderWidth = '2px';
+      btn.style.transform = 'scale(1.05)';
+    } else {
+      btn.style.background = 'rgba(255,255,255,0.04)';
+      btn.style.borderColor = 'rgba(255,255,255,0.1)';
+      btn.style.transform = 'scale(1)';
+    }
+  });
+}
 
 function changeQty(name, price, delta) {
   const safeId = 'qty-' + name.replace(/\s+/g, '-');
@@ -145,6 +167,59 @@ async function sendOrder() {
 
   if (!phone) { alert('Please enter your phone number!'); return; }
 
+  // Calculate total
+  let total = 0;
+  Object.keys(cart).forEach(item => { total += cart[item].price * cart[item].qty; });
+
+  // Handle payment
+  if (selectedPayment === 'mpesa' || selectedPayment === 'card') {
+    await paystackPay(name, phone, total);
+    return;
+  }
+
+  // Cash on delivery — place order directly
+  await placeOrder(name, phone, location, datetime, 'Cash on Delivery', null);
+}
+
+async function paystackPay(name, phone, total) {
+  const email = phone + '@mabuyustreet.co.ke';
+  const handler = PaystackPop.setup({
+    key: 'pk_test_f39e19f27f91da88e8740b72dcad49ef52ccd022',
+    email: email,
+    amount: total * 100,
+    currency: 'KES',
+    channels: selectedPayment === 'mpesa' ? ['mobile_money'] : ['card'],
+    metadata: { name: name, phone: phone },
+    callback: async function(response) {
+      // Verify payment
+      try {
+        const res = await fetch('https://mabuyu-street-production.up.railway.app/api/verify-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reference: response.reference })
+        });
+        const data = await res.json();
+        if (data.success) {
+          const name2 = document.getElementById('customerName').value.trim() || 'Customer';
+          const phone2 = document.getElementById('customerPhone').value.trim();
+          const location2 = document.getElementById('customerLocation').value.trim();
+          const datetime2 = getDateTime();
+          await placeOrder(name2, phone2, location2, datetime2, selectedPayment === 'mpesa' ? 'M-Pesa' : 'Card', response.reference);
+        } else {
+          alert('Payment could not be verified. Please try again.');
+        }
+      } catch(e) {
+        alert('Payment verification failed. Please contact us.');
+      }
+    },
+    onClose: function() {
+      alert('Payment cancelled.');
+    }
+  });
+  handler.openIframe();
+}
+
+async function placeOrder(name, phone, location, datetime, paymentMethod, paymentRef) {
   let orderLines = '';
   let total = 0;
   let itemsArray = [];
@@ -161,16 +236,15 @@ async function sendOrder() {
   const orderText = 'NEW ORDER — MABUYU STREET\n\nDate: ' + datetime + '\nName: ' + name + '\nPhone: ' + phone + '\nLocation: ' + (location || 'Not provided') + '\n\nORDER:\n' + orderLines + '\nTOTAL: Ksh ' + total;
 
   // Save to database
-  try {
+try {
     await fetch('https://mabuyu-street-production.up.railway.app/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name, phone: phone, location: location, items: itemsArray, total: total, datetime: datetime })
+      body: JSON.stringify({ name, phone, location, items: itemsArray, total, datetime, paymentMethod: paymentMethod || 'Cash on Delivery', paymentRef: paymentRef || '' })
     });
   } catch(e) {
     console.log('DB error:', e);
   }
-
 
   // Send to Email
   try {

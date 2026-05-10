@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mabuyu Street</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
 <body>
 <nav>
@@ -37,14 +36,6 @@
     <input type="text" id="customerLocation" placeholder="📍 Your location / delivery area">
     <div class="datetime-display" id="datetimeDisplay"></div>
     <button class="clear-btn" onclick="clearCart()">🗑️ Cancel & Clear Cart</button>
-    
-    <div style="margin:12px 0 8px; font-size:0.9rem; opacity:0.7; text-align:center;">Select payment method:</div>
-    <div style="display:flex; gap:10px; margin-bottom:12px;">
-      <button id="pay-mpesa" onclick="selectPayment('mpesa')" style="flex:1; padding:12px; background:rgba(0,150,0,0.15); border:2px solid #4caf50; color:#4caf50; border-radius:12px; cursor:pointer; font-weight:700; font-size:0.9rem;">📱 M-Pesa</button>
-      <button id="pay-card" onclick="selectPayment('card')" style="flex:1; padding:12px; background:rgba(33,150,243,0.1); border:2px solid rgba(33,150,243,0.3); color:#2196f3; border-radius:12px; cursor:pointer; font-weight:700; font-size:0.9rem;">💳 Card</button>
-      <button id="pay-cash" onclick="selectPayment('cash')" style="flex:1; padding:12px; background:rgba(212,160,23,0.1); border:2px solid rgba(212,160,23,0.3); color:#d4a017; border-radius:12px; cursor:pointer; font-weight:700; font-size:0.9rem;">💵 Cash</button>
-    </div>
-
     <button class="order-btn" onclick="sendOrder()">📲 Place Order</button>
     <div class="order-success" id="orderSuccess">✅ Order sent! We will confirm shortly.</div>
   </div>
@@ -232,10 +223,7 @@ function showOrderStatus(order) {
   updateStatusUI(order.status);
   // Poll every 15 seconds for updates
   if (trackingInterval) clearInterval(trackingInterval);
-  trackingInterval = setInterval(() => pollStatus(order.id), 15000);
-}
-
-function updateStatusUI(status) {
+  trackingInterval = setInterval(() => pollStatus(order.id), 15000)function updateStatusUI(status) {
 const icons = { processing:'⏳', processed:'✅', enroute:'🚚', delivered:'📦' };
   const labels = { processing:'Processing...', processed:'Order Processed!', enroute:'On the Way 🚚', delivered:'Delivered!' };
   const details = {
@@ -257,7 +245,7 @@ const icons = { processing:'⏳', processed:'✅', enroute:'🚚', delivered:'�
     else { el.className = 'step'; }
   });
   // Show confirm button only when delivered
-document.getElementById('confirmBtn').style.display = status === 'delivered' ? 'block' : 'none';
+
 }
 
 async function pollStatus(orderId) {
