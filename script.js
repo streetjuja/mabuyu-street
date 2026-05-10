@@ -171,8 +171,6 @@ async function sendOrder() {
     console.log('DB error:', e);
   }
 
-  // Send to WhatsApp
-  window.open('https://wa.me/254793400696?text=' + encodeURIComponent(orderText), '_blank');
 
   // Send to Email
   try {
