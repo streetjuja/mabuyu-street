@@ -147,9 +147,9 @@
     </div>
     <div class="track-steps">
       <div class="step" id="step-processing">⏳ Processing</div>
+      <div class="step" id="step-processed">✅ Processed</div>
       <div class="step" id="step-enroute">🚚 Enroute</div>
       <div class="step" id="step-delivered">📦 Delivered</div>
-      <div class="step" id="step-confirmed">✅ Confirmed</div>
     </div>
     <button class="confirm-btn" id="confirmBtn" style="display:none" onclick="confirmReceived()">✅ Confirm Order Received</button>
   </div>
@@ -227,19 +227,19 @@ function showOrderStatus(order) {
 }
 
 function updateStatusUI(status) {
-  const icons = { processing:'⏳', enroute:'🚚', delivered:'📦', confirmed:'✅' };
-  const labels = { processing:'Processing', enroute:'On the Way 🚚', delivered:'Delivered!', confirmed:'Order Confirmed ✅' };
+const icons = { processing:'⏳', processed:'✅', enroute:'🚚', delivered:'📦' };
+  const labels = { processing:'Processing...', processed:'Order Processed!', enroute:'On the Way 🚚', delivered:'Delivered!' };
   const details = {
-    processing: 'Your order has been received. Please wait for confirmation.',
+    processing: 'Your order has been received. Please wait while we prepare it.',
+    processed: 'Your order is ready and will be on the way soon!',
     enroute: 'Your order is on the way! Get ready to receive it.',
-    delivered: 'Your order has been delivered. Please confirm below.',
-    confirmed: 'Thank you! Enjoy your snacks 🎉'
+    delivered: 'Your order has been delivered. Enjoy your snacks! 🎉'
   };
   document.getElementById('trackIcon').textContent = icons[status] || '⏳';
   document.getElementById('trackLabel').textContent = labels[status] || status;
   document.getElementById('trackDetail').textContent = details[status] || '';
   // Update steps
-  const steps = ['processing', 'enroute', 'delivered', 'confirmed'];
+  const steps = ['processing', 'processed', 'enroute', 'delivered'];
   const currentIndex = steps.indexOf(status);
   steps.forEach((s, i) => {
     const el = document.getElementById('step-' + s);
@@ -248,7 +248,7 @@ function updateStatusUI(status) {
     else { el.className = 'step'; }
   });
   // Show confirm button only when delivered
-  document.getElementById('confirmBtn').style.display = status === 'delivered' ? 'block' : 'none';
+ document.getElementById('confirmBtn').style.display = 'none';
 }
 
 async function pollStatus(orderId) {
