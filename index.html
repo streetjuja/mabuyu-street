@@ -36,7 +36,7 @@
     <input type="text" id="customerLocation" placeholder="📍 Your location / delivery area">
     <div class="datetime-display" id="datetimeDisplay"></div>
     <button class="clear-btn" onclick="clearCart()">🗑️ Cancel & Clear Cart</button>
-    <button class="order-btn" onclick="sendOrder()">📲 Send Order via WhatsApp + Email</button>
+    <button class="order-btn" onclick="sendOrder()">📲 Place Order</button>
     <div class="order-success" id="orderSuccess">✅ Order sent! We will confirm shortly.</div>
   </div>
 </div>
@@ -132,6 +132,161 @@
 <footer>
   &copy; 2026 Mabuyu Street &mdash; Along Gatundu Road, Opposite Nderich Wines
 </footer>
+<!-- ORDER TRACKING POPUP -->
+<div class="track-overlay" id="trackOverlay" onclick="closeTracking()"></div>
+<div class="track-popup" id="trackPopup">
+  <button class="track-close" onclick="closeTracking()">✕</button>
+  <h2>📦 Track Your Order</h2>
+
+  <!-- Status display (shown after order placed) -->
+  <div id="trackStatus" style="display:none">
+    <div class="track-status-box" id="trackStatusBox">
+      <div class="track-icon" id="trackIcon">⏳</div>
+      <div class="track-label" id="trackLabel">Processing</div>
+      <div class="track-detail" id="trackDetail">Your order has been received. Please wait for confirmation.</div>
+    </div>
+    <div class="track-steps">
+      <div class="step" id="step-processing">⏳ Processing</div>
+      <div class="step" id="step-enroute">🚚 Enroute</div>
+      <div class="step" id="step-delivered">📦 Delivered</div>
+      <div class="step" id="step-confirmed">✅ Confirmed</div>
+    </div>
+    <button class="confirm-btn" id="confirmBtn" style="display:none" onclick="confirmReceived()">✅ Confirm Order Received</button>
+  </div>
+
+  <!-- Phone lookup -->
+  <div id="trackLookup">
+    <p>Enter your phone number to track your order</p>
+    <input type="tel" id="trackPhone" placeholder="📞 Your phone number">
+    <button class="track-btn" onclick="lookupOrder()">🔍 Track Order</button>
+    <div id="trackError" style="color:#ff6b6b; margin-top:10px; display:none">No order found for that number.</div>
+  </div>
+
+  <button class="track-link" onclick="switchToLookup()" id="switchLookupBtn" style="display:none">🔍 Track a different order</button>
+</div>
+
+<!-- TRACK ORDER BUTTON (floating) -->
+<button class="floating-track-btn" onclick="openTracking()">📦 Track Order</button>
+
+<style>
+.track-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; display:none; }
+.track-overlay.open { display:block; }
+.track-popup { position:fixed; bottom:0; left:0; right:0; background:linear-gradient(145deg,#0a0a0a,#1a0505); border-top:2px solid #d4a017; border-radius:24px 24px 0 0; padding:32px 24px; z-index:1001; transform:translateY(100%); transition:transform 0.3s ease; max-height:85vh; overflow-y:auto; }
+.track-popup.open { transform:translateY(0); }
+.track-close { position:absolute; top:16px; right:20px; background:none; border:none; color:white; font-size:1.3rem; cursor:pointer; }
+.track-popup h2 { color:#d4a017; font-size:1.5rem; margin-bottom:20px; text-align:center; }
+.track-popup p { opacity:0.7; text-align:center; margin-bottom:16px; }
+.track-popup input { width:100%; padding:14px; background:rgba(255,255,255,0.06); border:1px solid rgba(212,160,23,0.3); border-radius:10px; color:white; font-size:1rem; margin-bottom:12px; box-sizing:border-box; }
+.track-btn { width:100%; padding:14px; background:linear-gradient(135deg,#d4a017,#b8860b); color:#1a1a1a; border:none; border-radius:50px; font-size:1rem; font-weight:700; cursor:pointer; }
+.track-status-box { text-align:center; padding:24px; background:rgba(255,255,255,0.04); border-radius:16px; margin-bottom:20px; }
+.track-icon { font-size:3rem; margin-bottom:8px; }
+.track-label { font-size:1.4rem; font-weight:700; color:#d4a017; margin-bottom:8px; }
+.track-detail { opacity:0.7; font-size:0.95rem; line-height:1.5; }
+.track-steps { display:flex; justify-content:space-between; margin-bottom:20px; gap:6px; }
+.step { flex:1; text-align:center; padding:8px 4px; background:rgba(255,255,255,0.04); border-radius:10px; font-size:0.75rem; opacity:0.4; transition:all 0.3s; }
+.step.active { opacity:1; background:rgba(212,160,23,0.15); border:1px solid #d4a017; color:#d4a017; }
+.step.done { opacity:0.7; background:rgba(76,175,80,0.1); border:1px solid #4caf50; color:#4caf50; }
+.confirm-btn { width:100%; padding:14px; background:linear-gradient(135deg,#4caf50,#2e7d32); color:white; border:none; border-radius:50px; font-size:1rem; font-weight:700; cursor:pointer; margin-bottom:12px; }
+.floating-track-btn { position:fixed; bottom:24px; right:24px; background:linear-gradient(135deg,#d4a017,#b8860b); color:#1a1a1a; border:none; border-radius:50px; padding:14px 20px; font-size:0.95rem; font-weight:700; cursor:pointer; z-index:999; box-shadow:0 4px 20px rgba(212,160,23,0.4); }
+.track-link { background:none; border:none; color:#d4a017; cursor:pointer; font-size:0.9rem; text-decoration:underline; display:block; margin:10px auto 0; }
+</style>
+
+<script>
+let currentOrderId = null;
+let trackingInterval = null;
+
+function openTracking() {
+  document.getElementById('trackOverlay').classList.add('open');
+  document.getElementById('trackPopup').classList.add('open');
+  document.getElementById('trackStatus').style.display = 'none';
+  document.getElementById('trackLookup').style.display = 'block';
+  document.getElementById('switchLookupBtn').style.display = 'none';
+}
+
+function closeTracking() {
+  document.getElementById('trackOverlay').classList.remove('open');
+  document.getElementById('trackPopup').classList.remove('open');
+  if (trackingInterval) clearInterval(trackingInterval);
+}
+
+function switchToLookup() {
+  document.getElementById('trackStatus').style.display = 'none';
+  document.getElementById('trackLookup').style.display = 'block';
+  document.getElementById('switchLookupBtn').style.display = 'none';
+}
+
+function showOrderStatus(order) {
+  currentOrderId = order.id;
+  document.getElementById('trackLookup').style.display = 'none';
+  document.getElementById('trackStatus').style.display = 'block';
+  document.getElementById('switchLookupBtn').style.display = 'block';
+  updateStatusUI(order.status);
+  // Poll every 15 seconds for updates
+  if (trackingInterval) clearInterval(trackingInterval);
+  trackingInterval = setInterval(() => pollStatus(order.id), 15000);
+}
+
+function updateStatusUI(status) {
+  const icons = { processing:'⏳', enroute:'🚚', delivered:'📦', confirmed:'✅' };
+  const labels = { processing:'Processing', enroute:'On the Way 🚚', delivered:'Delivered!', confirmed:'Order Confirmed ✅' };
+  const details = {
+    processing: 'Your order has been received. Please wait for confirmation.',
+    enroute: 'Your order is on the way! Get ready to receive it.',
+    delivered: 'Your order has been delivered. Please confirm below.',
+    confirmed: 'Thank you! Enjoy your snacks 🎉'
+  };
+  document.getElementById('trackIcon').textContent = icons[status] || '⏳';
+  document.getElementById('trackLabel').textContent = labels[status] || status;
+  document.getElementById('trackDetail').textContent = details[status] || '';
+  // Update steps
+  const steps = ['processing', 'enroute', 'delivered', 'confirmed'];
+  const currentIndex = steps.indexOf(status);
+  steps.forEach((s, i) => {
+    const el = document.getElementById('step-' + s);
+    if (i < currentIndex) { el.className = 'step done'; }
+    else if (i === currentIndex) { el.className = 'step active'; }
+    else { el.className = 'step'; }
+  });
+  // Show confirm button only when delivered
+  document.getElementById('confirmBtn').style.display = status === 'delivered' ? 'block' : 'none';
+}
+
+async function pollStatus(orderId) {
+  try {
+    const res = await fetch('https://mabuyu-street-production.up.railway.app/api/order-status-by-id/' + orderId);
+    const data = await res.json();
+    if (data.found) updateStatusUI(data.order.status);
+  } catch(e) {}
+}
+
+async function lookupOrder() {
+  const phone = document.getElementById('trackPhone').value.trim();
+  if (!phone) return;
+  try {
+    const res = await fetch('https://mabuyu-street-production.up.railway.app/api/order-status/' + encodeURIComponent(phone));
+    const data = await res.json();
+    if (data.found) {
+      document.getElementById('trackError').style.display = 'none';
+      showOrderStatus(data.order);
+    } else {
+      document.getElementById('trackError').style.display = 'block';
+    }
+  } catch(e) {
+    document.getElementById('trackError').style.display = 'block';
+  }
+}
+
+async function confirmReceived() {
+  if (!currentOrderId) return;
+  try {
+    await fetch('https://mabuyu-street-production.up.railway.app/api/orders/' + currentOrderId + '/confirm', { method: 'PATCH' });
+    updateStatusUI('confirmed');
+  } catch(e) {
+    alert('Could not confirm. Please try again.');
+  }
+}
+</script>
+
 <script src="script.js"></script>
 </body>
 </html>

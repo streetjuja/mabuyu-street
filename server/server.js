@@ -34,7 +34,6 @@ const db = new sqlite3.Database(path.join(__dirname, 'mabuyu.db'), (err) => {
   else console.log('✅ Database connected');
 });
 
-db.serialize(() => {
 db.run(`CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
@@ -44,9 +43,11 @@ db.run(`CREATE TABLE IF NOT EXISTS orders (
     total INTEGER,
     datetime TEXT,
     delivered INTEGER DEFAULT 0,
+    status TEXT DEFAULT 'processing',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
   db.run(`ALTER TABLE orders ADD COLUMN delivered INTEGER DEFAULT 0`, () => {});
+  db.run(`ALTER TABLE orders ADD COLUMN status TEXT DEFAULT 'processing'`, () => {});
   db.run(`CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
@@ -116,6 +117,36 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+// Get order status by phone
+app.get('/api/order-status/:phone', (req, res) => {
+  const { phone } = req.params;
+  db.get(`SELECT id, name, status, total, datetime, items FROM orders WHERE phone = ? ORDER BY created_at DESC LIMIT 1`, [phone], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.json({ found: false });
+    row.items = JSON.parse(row.items);
+    res.json({ found: true, order: row });
+  });
+});
+
+// Update order status (admin)
+app.patch('/api/orders/:id/status', requireAdmin, (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const delivered = status === 'delivered' || status === 'confirmed' ? 1 : 0;
+  db.run(`UPDATE orders SET status = ?, delivered = ? WHERE id = ?`, [status, delivered, id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (status === 'enroute') sendNotification('🚚 Order #' + id + ' is now on the way!');
+    res.json({ success: true });
+  });
+});
+
+// Customer confirms received
+app.patch('/api/orders/:id/confirm', (req, res) => {
+  db.run(`UPDATE orders SET status = 'confirmed', delivered = 1 WHERE id = ?`, [req.params.id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
 app.listen(PORT, '0.0.0.0', () => {
   console.log('🚀 Mabuyu Street server running on port ' + PORT);
 app.patch('/api/orders/:id/delivered', requireAdmin, (req, res) => {
