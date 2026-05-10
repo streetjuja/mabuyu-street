@@ -316,23 +316,26 @@ async function loadOrders() {
       container.innerHTML = '<p class="empty-msg">No orders yet</p>';
       return;
     }
-    container.innerHTML = orders.map((o, i) => `
-      <div class="order-card">
-        <h3>📦 Order #${o.id} — ${o.datetime} ${i === 0 ? '<span class="badge new-badge">🆕 Latest</span>' : ''}</h3>
+container.innerHTML = orders.map((o, i) => `
+      <div class="order-card" id="order-${o.id}" style="${o.delivered ? 'opacity:0.4; border-color: #4caf50;' : ''}">
+        <h3>📦 Order #${o.id} — ${o.datetime} ${i === 0 && !o.delivered ? '<span class="badge new-badge">🆕 Latest</span>' : ''} ${o.delivered ? '<span class="badge" style="background:rgba(76,175,80,0.2);border-color:#4caf50;color:#4caf50;">✅ Delivered</span>' : ''}</h3>
         <div class="order-meta">
           <span class="badge">👤 ${o.name}</span>
           <span class="badge">📞 ${o.phone}</span>
           <span class="badge">📍 ${o.location || 'No location'}</span>
         </div>
         <div class="order-items">
-          ${o.items.map(i => `
+          ${o.items.map(item => `
             <div class="order-item-row">
-              <span>${i.name} × ${i.qty}</span>
-              <span>Ksh ${i.itemTotal}</span>
+              <span>${item.name} × ${item.qty}</span>
+              <span>Ksh ${item.itemTotal}</span>
             </div>
           `).join('')}
         </div>
         <div class="order-total">💰 Total: Ksh ${o.total}</div>
+        <button onclick="toggleDelivered(${o.id}, ${o.delivered ? 0 : 1})" style="margin-top:14px; padding:10px 24px; background:${o.delivered ? 'transparent' : 'linear-gradient(135deg,#4caf50,#2e7d32)'}; border:${o.delivered ? '1px solid #ff6b6b' : 'none'}; color:${o.delivered ? '#ff6b6b' : 'white'}; border-radius:50px; cursor:pointer; font-size:0.95rem; font-weight:600;">
+          ${o.delivered ? '↩️ Mark as Undelivered' : '✅ Mark as Delivered'}
+        </button>
       </div>
     `).join('');
   } catch(e) {
@@ -365,6 +368,18 @@ async function loadReviews() {
     `).join('');
   } catch(e) {
     container.innerHTML = '<p class="empty-msg">⚠️ Could not load reviews.</p>';
+  }
+}
+async function toggleDelivered(id, delivered) {
+  try {
+    await fetch('https://mabuyu-street-production.up.railway.app/api/orders/' + id + '/delivered', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
+      body: JSON.stringify({ delivered })
+    });
+    loadOrders();
+  } catch(e) {
+    alert('Could not update order status.');
   }
 }
 </script>

@@ -35,7 +35,7 @@ const db = new sqlite3.Database(path.join(__dirname, 'mabuyu.db'), (err) => {
 });
 
 db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS orders (
+db.run(`CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
     phone TEXT,
@@ -43,8 +43,10 @@ db.serialize(() => {
     items TEXT,
     total INTEGER,
     datetime TEXT,
+    delivered INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
+  db.run(`ALTER TABLE orders ADD COLUMN delivered INTEGER DEFAULT 0`, () => {});
   db.run(`CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
@@ -116,4 +118,12 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log('🚀 Mabuyu Street server running on port ' + PORT);
+app.patch('/api/orders/:id/delivered', requireAdmin, (req, res) => {
+  const { id } = req.params;
+  const { delivered } = req.body;
+  db.run(`UPDATE orders SET delivered = ? WHERE id = ?`, [delivered ? 1 : 0, id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
 });
