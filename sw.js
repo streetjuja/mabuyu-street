@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mabuyu-admin-v1';
+const CACHE_NAME = 'mabuyu-admin-v3';
 const urlsToCache = [
   '/admin.html',
   '/style.css',
