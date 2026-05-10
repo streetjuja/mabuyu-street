@@ -317,8 +317,8 @@ async function loadOrders() {
       return;
     }
 container.innerHTML = orders.map((o, i) => `
-      <div class="order-card" id="order-${o.id}" style="${o.delivered ? 'opacity:0.4; border-color: #4caf50;' : ''}">
-        <h3>📦 Order #${o.id} — ${o.datetime} ${i === 0 && !o.delivered ? '<span class="badge new-badge">🆕 Latest</span>' : ''} ${o.delivered ? '<span class="badge" style="background:rgba(76,175,80,0.2);border-color:#4caf50;color:#4caf50;">✅ Delivered</span>' : ''}</h3>
+        <div class="order-card" id="order-${o.id}" style="${o.status === 'confirmed' ? 'opacity:0.5; border-color:#4caf50;' : ''}">
+        <h3>📦 Order #${o.id} — ${o.datetime} ${i === 0 ? '<span class="badge new-badge">🆕 Latest</span>' : ''} <span class="badge" style="background:${o.status === 'processing' ? 'rgba(212,160,23,0.2)' : o.status === 'enroute' ? 'rgba(33,150,243,0.2)' : 'rgba(76,175,80,0.2)'}; border-color:${o.status === 'processing' ? '#d4a017' : o.status === 'enroute' ? '#2196f3' : '#4caf50'}; color:${o.status === 'processing' ? '#d4a017' : o.status === 'enroute' ? '#2196f3' : '#4caf50'};">${o.status === 'processing' ? '⏳ Processing' : o.status === 'enroute' ? '🚚 Enroute' : o.status === 'delivered' ? '📦 Delivered' : '✅ Confirmed'}</span></h3>
         <div class="order-meta">
           <span class="badge">👤 ${o.name}</span>
           <span class="badge">📞 ${o.phone}</span>
@@ -334,9 +334,12 @@ container.innerHTML = orders.map((o, i) => `
         </div>
 <div class="order-total">💰 Total: Ksh ${o.total}</div>
         <div style="margin-top:16px; text-align:center;">
-          <button onclick="toggleDelivered(${o.id}, ${o.delivered ? 0 : 1})" style="display:inline-block; padding:12px 30px; background:${o.delivered ? '#1a1a1a' : '#4caf50'}; border:2px solid ${o.delivered ? '#ff6b6b' : '#4caf50'}; color:${o.delivered ? '#ff6b6b' : 'white'}; border-radius:50px; cursor:pointer; font-size:1rem; font-weight:700; width:100%;">
-            ${o.delivered ? '↩️ Mark as Undelivered' : '✅ Mark as Delivered'}
-          </button>
+         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
+            <button onclick="setStatus(${o.id}, 'processing')" style="flex:1; padding:10px; background:${o.status === 'processing' ? '#d4a017' : 'rgba(212,160,23,0.1)'}; border:1px solid #d4a017; color:${o.status === 'processing' ? '#1a1a1a' : '#d4a017'}; border-radius:50px; cursor:pointer; font-size:0.85rem; font-weight:700;">⏳ Processing</button>
+            <button onclick="setStatus(${o.id}, 'enroute')" style="flex:1; padding:10px; background:${o.status === 'enroute' ? '#2196f3' : 'rgba(33,150,243,0.1)'}; border:1px solid #2196f3; color:${o.status === 'enroute' ? 'white' : '#2196f3'}; border-radius:50px; cursor:pointer; font-size:0.85rem; font-weight:700;">🚚 Enroute</button>
+            <button onclick="setStatus(${o.id}, 'delivered')" style="flex:1; padding:10px; background:${o.status === 'delivered' || o.status === 'confirmed' ? '#4caf50' : 'rgba(76,175,80,0.1)'}; border:1px solid #4caf50; color:${o.status === 'delivered' || o.status === 'confirmed' ? 'white' : '#4caf50'}; border-radius:50px; cursor:pointer; font-size:0.85rem; font-weight:700;">✅ Delivered</button>
+          </div>
+          ${o.status === 'confirmed' ? '<div style="margin-top:8px; color:#4caf50; font-size:0.9rem; text-align:center;">🎉 Customer confirmed receipt</div>' : ''}
         </div>
       </div>
     `).join('');
@@ -372,12 +375,12 @@ async function loadReviews() {
     container.innerHTML = '<p class="empty-msg">⚠️ Could not load reviews.</p>';
   }
 }
-async function toggleDelivered(id, delivered) {
+async function setStatus(id, status) {
   try {
-    await fetch('https://mabuyu-street-production.up.railway.app/api/orders/' + id + '/delivered', {
+    await fetch('https://mabuyu-street-production.up.railway.app/api/orders/' + id + '/status', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
-      body: JSON.stringify({ delivered })
+      body: JSON.stringify({ status })
     });
     loadOrders();
   } catch(e) {
