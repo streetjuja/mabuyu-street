@@ -34,7 +34,8 @@ const db = new sqlite3.Database(path.join(__dirname, 'mabuyu.db'), (err) => {
   else console.log('✅ Database connected');
 });
 
-db.run(`CREATE TABLE IF NOT EXISTS orders (
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
     phone TEXT,
@@ -57,7 +58,6 @@ db.run(`CREATE TABLE IF NOT EXISTS orders (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
 });
-
 app.post('/api/login', (req, res) => {
   const { password } = req.body;
   if (password === ADMIN_PASSWORD) {
