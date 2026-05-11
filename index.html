@@ -8,24 +8,35 @@
   <script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
 <body>
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- SIDE DRAWER -->
+<div class="side-drawer" id="sideDrawer">
+  <div class="drawer-header">
+    <div class="drawer-logo">🌿 Mabuyu Street</div>
+    <div class="drawer-tagline">Kenyan Street Snacks</div>
+  </div>
+  <nav class="drawer-nav">
+    <div class="drawer-section">Menu</div>
+    <a href="index.html" class="active"><span class="drawer-icon">🏠</span> Home</a>
+    <a href="track.html"><span class="drawer-icon">📦</span> Track Order</a>
+    <a href="contact.html"><span class="drawer-icon">📍</span> Contact & Location</a>
+    <a href="complaints.html"><span class="drawer-icon">💬</span> Reviews</a>
+  </nav>
+</div>
+
 <nav>
-  <div class="logo">🌿 Mabuyu Street</div>
-  <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+  <button class="hamburger" id="hamburger" onclick="toggleDrawer()">
     <span></span>
     <span></span>
     <span></span>
   </button>
-  <ul id="navMenu">
-    <li><a href="index.html" class="active">Home</a></li>
-     <li><a href="track.html">Track Order</a></li>
-    <li><a href="contact.html">Contact & Location</a></li>
-    <li><a href="complaints.html">Reviews</a></li>
-  </ul>
+  <div class="logo" style="position:absolute; left:50%; transform:translateX(-50%);">🌿 Mabuyu Street</div>
   <div class="cart-icon" onclick="toggleCart()">
     🛒 <span id="cart-count">0</span>
   </div>
 </nav>
-
 <!-- CART SIDEBAR -->
 <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
 <div class="cart-sidebar" id="cartSidebar">
