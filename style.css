@@ -53,7 +53,7 @@ nav ul li a {
 nav ul li a:hover, nav ul li a.active { color: var(--gold); }
 /* ===== SIDE DRAWER MENU ===== */
 .hamburger {
-  display: none;
+  display: flex;
   flex-direction: column;
   cursor: pointer;
   gap: 5px;
