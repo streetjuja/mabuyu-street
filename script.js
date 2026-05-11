@@ -3,9 +3,10 @@ let cart = {};
 let selectedPayment = 'cash';
 
 function selectPayment(method) {
-  if (method === 'mpesa' || method === 'card') {
-    alert('currently unnavailable try cash for payment after delivery' + (method === 'mpesa' ? 'M-Pesa' : 'Card') + ' payment is currently unavailable. Please use Cash on Delivery.');
+if (method === 'mpesa' || method === 'card') {
+    alert('⚠️ Currently unavailable. Please use Cash on Delivery.');
     return;
+  }
   }
   selectedPayment = method;
   const buttons = { mpesa: 'pay-mpesa', card: 'pay-card', cash: 'pay-cash' };
