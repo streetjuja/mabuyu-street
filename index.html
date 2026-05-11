@@ -294,6 +294,38 @@ async function confirmReceived() {
 }
 </script>
 
+<script>
+async function checkStock() {
+  try {
+    const res = await fetch('https://mabuyu-street-production.up.railway.app/api/stock');
+    const stockData = await res.json();
+    stockData.forEach(s => {
+      if (s.out_of_stock === 1) {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+          const title = card.querySelector('h3');
+          if (title && title.textContent.trim() === s.product) {
+            const addBtn = card.querySelector('.add-btn');
+            const qtyControl = card.querySelector('.qty-control');
+            if (addBtn) {
+              addBtn.disabled = true;
+              addBtn.textContent = '❌ Out of Stock';
+              addBtn.style.background = 'rgba(255,100,100,0.2)';
+              addBtn.style.border = '1px solid #ff6b6b';
+              addBtn.style.color = '#ff6b6b';
+              addBtn.style.cursor = 'not-allowed';
+            }
+            if (qtyControl) qtyControl.style.opacity = '0.3';
+            if (qtyControl) qtyControl.style.pointerEvents = 'none';
+          }
+        });
+      }
+    });
+  } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', checkStock);
+</script>
+
 <script src="script.js"></script>
 </body>
 </html>

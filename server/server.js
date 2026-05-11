@@ -52,6 +52,11 @@ db.serialize(() => {
   db.run(`ALTER TABLE orders ADD COLUMN status TEXT DEFAULT 'processing'`, () => {});
   db.run(`ALTER TABLE orders ADD COLUMN paymentMethod TEXT DEFAULT 'Cash on Delivery'`, () => {});
   db.run(`ALTER TABLE orders ADD COLUMN paymentRef TEXT DEFAULT ''`, () => {});
+  db.run(`CREATE TABLE IF NOT EXISTS stock (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product TEXT UNIQUE,
+    out_of_stock INTEGER DEFAULT 0
+  )`); 
   db.run(`CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
@@ -185,6 +190,25 @@ app.post('/api/verify-payment', async (req, res) => {
   } catch(e) {
     res.status(500).json({ error: e.message });
   }
+});
+// Get all stock status
+app.get('/api/stock', (req, res) => {
+  db.all(`SELECT * FROM stock`, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+// Update stock status
+app.patch('/api/stock/:product', requireAdmin, (req, res) => {
+  const { product } = req.params;
+  const { out_of_stock } = req.body;
+  db.run(`INSERT INTO stock (product, out_of_stock) VALUES (?, ?) ON CONFLICT(product) DO UPDATE SET out_of_stock = ?`,
+    [product, out_of_stock, out_of_stock], function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ success: true });
+    }
+  );
 });
 app.listen(PORT, '0.0.0.0', () => {
   console.log('🚀 Mabuyu Street server running on port ' + PORT);
