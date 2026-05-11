@@ -342,19 +342,17 @@ async function checkStock() {
 document.addEventListener('DOMContentLoaded', checkStock);
 </script>
 <script>
-function toggleMenu() {
+function toggleDrawer() {
   document.getElementById('hamburger').classList.toggle('open');
-  document.getElementById('navMenu').classList.toggle('open');
+  document.getElementById('sideDrawer').classList.toggle('open');
+  document.getElementById('drawerOverlay').classList.toggle('open');
 }
-// Close menu when a link is clicked
-document.querySelectorAll('#navMenu a').forEach(link => {
-  link.addEventListener('click', () => {
-    document.getElementById('hamburger').classList.remove('open');
-    document.getElementById('navMenu').classList.remove('open');
-  });
-});
+function closeDrawer() {
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('sideDrawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
 </script>
-
 <script src="script.js"></script>
 </body>
 </html>
