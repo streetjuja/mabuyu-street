@@ -152,10 +152,8 @@ nav ul li a:hover, nav ul li a.active { color: var(--gold); }
   margin-top: 8px;
 }
 
-@media (max-width: 768px) {
-  .hamburger { display: flex; }
-  nav ul { display: none; }
-}
+.hamburger { display: flex; }
+nav ul { display: none; }}
 /* ====== HERO ====== */
 .hero {
   text-align: center;
