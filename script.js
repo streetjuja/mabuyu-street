@@ -7,7 +7,6 @@ if (method === 'mpesa' || method === 'card') {
     alert('⚠️ Currently unavailable. Please use Cash on Delivery.');
     return;
   }
-  }
   selectedPayment = method;
   const buttons = { mpesa: 'pay-mpesa', card: 'pay-card', cash: 'pay-cash' };
   const colors = { mpesa: '#4caf50', card: '#2196f3', cash: '#d4a017' };
