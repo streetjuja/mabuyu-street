@@ -58,6 +58,18 @@
 <footer>
   &copy; 2026 Mabuyu Street &mdash; Along Gatundu Road, Opposite Nderich Wines
 </footer>
-
+<script>
+function toggleMenu() {
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('navMenu').classList.toggle('open');
+}
+// Close menu when a link is clicked
+document.querySelectorAll('#navMenu a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('hamburger').classList.remove('open');
+    document.getElementById('navMenu').classList.remove('open');
+  });
+});
+</script>
 </body>
 </html>

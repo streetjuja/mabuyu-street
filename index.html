@@ -10,7 +10,12 @@
 <body>
 <nav>
   <div class="logo">🌿 Mabuyu Street</div>
-  <ul>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <ul id="navMenu">
     <li><a href="index.html" class="active">Home</a></li>
      <li><a href="track.html">Track Order</a></li>
     <li><a href="contact.html">Contact & Location</a></li>
@@ -324,6 +329,19 @@ async function checkStock() {
   } catch(e) {}
 }
 document.addEventListener('DOMContentLoaded', checkStock);
+</script>
+<script>
+function toggleMenu() {
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('navMenu').classList.toggle('open');
+}
+// Close menu when a link is clicked
+document.querySelectorAll('#navMenu a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('hamburger').classList.remove('open');
+    document.getElementById('navMenu').classList.remove('open');
+  });
+});
 </script>
 
 <script src="script.js"></script>
