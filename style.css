@@ -29,8 +29,8 @@ nav {
   top: 0;
   z-index: 100;
   border-bottom: 2px solid var(--gold);
+  position: relative;
 }
-
 .logo {
   font-family: 'Playfair Display', serif;
   font-size: 1.6rem;
@@ -708,4 +708,8 @@ footer {
 .clear-btn:hover {
   background: #ff6b6b;
   color: white;
+}
+.hamburger {
+  position: relative;
+  z-index: 102;
 }
